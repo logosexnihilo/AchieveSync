@@ -1,0 +1,1 @@
+This is a basic Minecraft plugin used in Magma/Arclight servers that host both Forge mods and Bukkit plugins. This plugin is built for Sky Factory 4 to sync all players achievements to allow for players to be free to multi-task.
