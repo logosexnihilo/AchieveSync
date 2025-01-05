@@ -33,14 +33,14 @@ public class AchieveSync extends JavaPlugin implements Listener {
         Advancement advancement = event.getAdvancement();
 
         // Notify players about the synchronization
-        Bukkit.broadcastMessage(ChatColor.GREEN + "Player " + player.getName() + " earned an achievement, syncing to everyone!");
+        Bukkit.broadcastMessage(ChatColor.GREEN + "Player " + player.getName() + " earned an advancement, syncing to everyone!");
 
         // Grant the advancement to all other players
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+        Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
             if (!onlinePlayer.equals(player)) {
                 grantAdvancement(onlinePlayer, advancement);
             }
-        }
+        });
     }
 
     @EventHandler
@@ -51,18 +51,11 @@ public class AchieveSync extends JavaPlugin implements Listener {
         Iterator<Advancement> advancementIterator = Bukkit.advancementIterator();
         while (advancementIterator.hasNext()) {
             Advancement advancement = advancementIterator.next();
-            boolean shouldGrant = false;
 
             // Check if any online player has completed the advancement
-            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if (onlinePlayer.equals(joiningPlayer)) continue;
-
-                AdvancementProgress progress = onlinePlayer.getAdvancementProgress(advancement);
-                if (progress.isDone()) {
-                    shouldGrant = true;
-                    break;
-                }
-            }
+            boolean shouldGrant = Bukkit.getOnlinePlayers().stream()
+                    .filter(onlinePlayer -> !onlinePlayer.equals(joiningPlayer))
+                    .anyMatch(onlinePlayer -> onlinePlayer.getAdvancementProgress(advancement).isDone());
 
             // Grant the advancement to the joining player if it's completed by any other player
             if (shouldGrant) {
@@ -71,13 +64,8 @@ public class AchieveSync extends JavaPlugin implements Listener {
         }
     }
 
-
     private void grantAdvancement(Player player, Advancement advancement) {
         AdvancementProgress progress = player.getAdvancementProgress(advancement);
-        Iterator<String> criteria = progress.getRemainingCriteria().iterator();
-
-        while (criteria.hasNext()) {
-            progress.awardCriteria(criteria.next());
-        }
+        progress.getRemainingCriteria().forEach(progress::awardCriteria);
     }
 }
