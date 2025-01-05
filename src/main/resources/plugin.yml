@@ -1,0 +1,4 @@
+name: AchieveSync
+version: '1.0-SNAPSHOT'
+main: net.len.achieveSync.AchieveSync
+api-version: '1.18'
